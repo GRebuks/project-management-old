@@ -71,4 +71,17 @@ class TeamController extends Controller
             abort(404);
         }
     }
+
+    public function destroy(Request $request): RedirectResponse {
+        $request->validateWithBag('teamDeletion', [
+            'password' => ['required', 'current-password'],
+        ]);
+
+        $team_id = $request->id;
+        $team = Team::find($team_id);
+
+        $team->delete();
+
+        return Redirect::to('/teams');
+    }
 }
