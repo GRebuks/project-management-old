@@ -39,10 +39,17 @@ class TeamService {
      *
      * @param User $user
      * @param Team $team
-     * @param TeamUserRole $role
      */
-    public function addParticipant(User $user, Team $team, TeamUserRole $role): void
+    public function addParticipant(User $user, Team $team): void
     {
-        $team->participants()->attach($user, ['role_id' => $role->id]);
+        if (!$user->participatingInTeams->contains($team)) {
+            $user->participatingInTeams()->attach($team, ['role_id' => 1]);
+        }
+    }
+
+    public function removeParticipant(User $user, Team $team) {
+        if ($user->participatingInTeams->contains($team)) {
+            $user->participatingInTeams()->detach($team);
+        }
     }
 }

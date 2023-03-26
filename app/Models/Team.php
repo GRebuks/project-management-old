@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,11 @@ class Team extends Model
         return $this->owner->id === auth()->id();
     }
 
+    public function getParticipants(): Collection
+    {
+        return $this->participants()->get();
+    }
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, "user_id");
@@ -29,10 +35,10 @@ class Team extends Model
 
     public function participants(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, "membership")
-            ->withPivot('role_id')
-            ->using(TeamUserRole::class)
-            ->as('team_role')
+        return $this->belongsToMany(User::class, "membership", "team_id", "user_id")
+//            ->withPivot('role_id')
+//            ->using(TeamUserRole::class)
+//            ->as('team_role')
             ->withTimestamps();
     }
 }

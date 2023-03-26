@@ -84,4 +84,18 @@ class TeamController extends Controller
 
         return Redirect::to('/teams');
     }
+
+    public function joinTeam($team_id): RedirectResponse
+    {
+        $team = Team::find($team_id);
+        $this->teamService->addParticipant(Auth::user(), $team);
+        return redirect()->route('teams.index');
+    }
+
+    public function leaveTeam($team_id): RedirectResponse
+    {
+        $team = Team::find($team_id);
+        $this->teamService->removeParticipant(Auth::user(), $team);
+        return redirect()->route('teams.index');
+    }
 }

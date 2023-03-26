@@ -17,6 +17,20 @@
                             <p>{{ count($team->participants) }} participants</p>
                             @if($team->isOwnedByLoggedUser())
                                 <a href="{{ route('teams.edit', ['id' => $team->id]) }}"><h2>OWNER</h2></a>
+                            @else
+                                @if(!Auth::user()->participatingInTeams->contains($team))
+                                    <form action="{{ route('teams.join', ['id' => $team->id]) }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="team_id" value="{{ $team->id }}">
+                                        <button type="submit">Participate</button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('teams.leave', ['id' => $team->id]) }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="team_id" value="{{ $team->id }}">
+                                        <button type="submit">Leave</button>
+                                    </form>
+                                @endif
                             @endif
                         </div>
                     @endforeach

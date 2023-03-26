@@ -55,8 +55,10 @@ class User extends Authenticatable
         return $this->hasMany(Team::class);
     }
     public function participatingInTeams(): BelongsToMany {
-        return $this->belongsToMany(Team::class)
-                    ->withPivot('membership')
-                    ->withTimestamps();
+        return $this->belongsToMany(Team::class, "membership", "user_id", "team_id")
+//            ->withPivot('role_id')
+//            ->using(TeamUserRole::class)
+//            ->as('team_role')
+            ->withTimestamps();
     }
 }

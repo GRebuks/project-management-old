@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+    Route::post('/teams/{id}/join', [TeamController::class, 'joinTeam'])->name('teams.join');
+    Route::post('/teams/{id}/leave', [TeamController::class, 'leaveTeam'])->name('teams.leave');
     Route::get('/teams/{id}/edit', [TeamController::class, 'edit'])->name('teams.edit');
     Route::patch('/teams/{id}/update', [TeamController::class, 'update'])->name('teams.update');
     Route::delete('/teams/{id}/destroy', [TeamController::class, 'destroy'])->name('teams.destroy');
