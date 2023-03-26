@@ -12,9 +12,12 @@
                     @foreach($teams as $team)
                         <div style="display: flex; flex-direction: column; padding: 2%; border-radius: 10px; border: 1px solid blueviolet">
                             <h3>{{ $team->name }}</h3>
-                            <p>{{ $team->owner->name }}</p>
+                            <p>{{ $team->owner->username }}</p>
                             <p>{{ $team->description }}</p>
                             <p>{{ count($team->participants) }} participants</p>
+                            @if($team->isOwnedByLoggedUser())
+                                <a href="{{ route('teams.edit', ['id' => $team->id]) }}"><h2>OWNER</h2></a>
+                            @endif
                         </div>
                     @endforeach
                 @else

@@ -17,6 +17,11 @@ class Team extends Model
         'public',
     ];
 
+    public function isOwnedByLoggedUser(): bool
+    {
+        return $this->owner->id === auth()->id();
+    }
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, "user_id");
