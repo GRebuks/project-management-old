@@ -3,10 +3,31 @@
         @csrf
 
         <!-- Name -->
+        <div style="display: flex; justify-content: space-between">
+            <div>
+                <x-input-label for="name" :value="__('Name')" />
+                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            </div>
+            <div>
+                <x-input-label for="surname" :value="__('Surname')" />
+                <x-text-input id="surname" class="block mt-1 w-full" type="text" name="surname" :value="old('surname')" required autofocus autocomplete="surname" />
+                <x-input-error :messages="$errors->get('surname')" class="mt-2" />
+            </div>
+        </div>
+
+        <!-- Username -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <x-input-label for="username" :value="__('Username')" />
+            <x-text-input id="username" class="block mt-1 w-full" type="text" name="username" :value="old('username')" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('username')" class="mt-2" />
+        </div>
+
+        <!-- Birthday -->
+        <div>
+            <x-input-label for="birthday" :value="__('Birthday')" />
+            <x-text-input id="birthday" class="block mt-1 w-full" type="date" name="birthday" :value="old('birthday')" required autofocus autocomplete="birthday" />
+            <x-input-error :messages="$errors->get('birthday')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
