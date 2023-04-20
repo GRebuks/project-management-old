@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TeamUpdateRequest;
+use App\Models\Notification;
 use App\Models\Team;
 use App\Models\TeamUserRole;
+use App\Models\User;
+use App\Services\NotificationService;
 use App\Services\TeamService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -27,10 +30,46 @@ class TeamController extends Controller
         return view('teams.index', ['teams' => $teams]);
     }
 
+    public function participating(): View
+    {
+        $user = Auth::user();
+        $ownedTeams = $this->teamService->getOwnedTeams($user);
+        $memberTeams = $this->teamService->getMemberTeams($user);
+        return view('teams.participating', compact('user', 'ownedTeams', 'memberTeams'));
+    }
+
+    /**
+     * Shows a specific team in detail
+     * @return View
+     */
+    public function show(): View {
+        $team_id = request()->id;
+        $team = Team::find($team_id);
+
+        if($team && $team->isOwnedByLoggedUser()) {
+            return view('teams.show', [
+                'team' => $team,
+                'id' => $team_id,
+            ]);
+        }
+        else {
+            abort(404);
+        }
+    }
+
+    /**
+     * Shows the form to create a new team
+     * @return View
+     */
     public function create(): View {
         return view('teams.create');
     }
 
+    /**
+     * Stores a new team in the database
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function store(Request $request): RedirectResponse {
         $validated = $request->validate([
             'name' => 'required|string|max:60',
@@ -43,6 +82,11 @@ class TeamController extends Controller
         return redirect(route('teams.index'));
     }
 
+    /**
+     * Shows the form to edit a team
+     * @param Request $request
+     * @return View
+     */
     public function edit(Request $request): View {
         $team_id = $request->id;
         $team = Team::find($team_id);
@@ -58,6 +102,11 @@ class TeamController extends Controller
         }
     }
 
+    /**
+     * Updates a team in the database
+     * @param TeamUpdateRequest $request
+     * @return RedirectResponse
+     */
     public function update(TeamUpdateRequest $request): RedirectResponse {
         $team_id = $request->id;
         $team = Team::find($team_id);
@@ -72,6 +121,11 @@ class TeamController extends Controller
         }
     }
 
+    /**
+     * Deletes a team from the database
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function destroy(Request $request): RedirectResponse {
         $request->validateWithBag('teamDeletion', [
             'password' => ['required', 'current-password'],
@@ -85,6 +139,11 @@ class TeamController extends Controller
         return Redirect::to('/teams');
     }
 
+    /**
+     * Adds a user to a team
+     * @param $team_id
+     * @return RedirectResponse
+     */
     public function joinTeam($team_id): RedirectResponse
     {
         $team = Team::find($team_id);
@@ -92,10 +151,30 @@ class TeamController extends Controller
         return redirect()->route('teams.index');
     }
 
+    /**
+     * Removes a user from a team
+     * @param $team_id
+     * @return RedirectResponse
+     */
     public function leaveTeam($team_id): RedirectResponse
     {
         $team = Team::find($team_id);
         $this->teamService->removeParticipant(Auth::user(), $team);
         return redirect()->route('teams.index');
+    }
+
+    public function showWorkspace(): View
+    {
+        $team_id = request()->id;
+        $team = Team::find($team_id);
+        if($team && $team->belongsToTeam()) {
+            return view('workspace.index', [
+                'team' => $team,
+                'id' => $team_id,
+            ]);
+        }
+        else {
+            abort(403);
+        }
     }
 }

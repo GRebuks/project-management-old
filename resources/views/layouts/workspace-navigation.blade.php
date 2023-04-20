@@ -12,13 +12,14 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('dashboard.index', ['id' => request('id')])" :active="request()->routeIs('dashboard.index')">
-                        {{ __('Dashboard') }}
+                    <?php
+                        $url = request()->path();
+                        $resource = explode('/', $url)[0];
+                    ?>
+                    <x-nav-link :href="route($resource . '.workspace', ['id' => request('id')])" :active="request()->routeIs($resource . '.workspace')">
+                        {{ __('Workspace') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Team') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route($resource . '.projects', ['id' => request('id')])" :active="request()->routeIs($resource . '.projects')">
                         {{ __('Projects') }}
                     </x-nav-link>
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -76,13 +77,16 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard.index', ['id' => request('id')])" :active="request()->routeIs('dashboard.index')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Team') }}
-            </x-responsive-nav-link>
+            @if (Str::contains(request()->url(), 'users'))
+                <x-responsive-nav-link :href="route('users.workspace', ['id' => request('id')])" :active="request()->routeIs('users.workspace')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            @elseif (Str::contains(request()->url(), 'teams'))
+                <x-responsive-nav-link :href="route('teams.workspace', ['id' => request('id')])" :active="request()->routeIs('teams.workspace')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            @endif
 
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Projects') }}

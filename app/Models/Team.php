@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Team extends Model
 {
     use HasFactory;
-    protected $table = "team";
+    protected $table = "teams";
     protected $fillable = [
         'name',
         'description',
@@ -21,6 +22,16 @@ class Team extends Model
     public function isOwnedByLoggedUser(): bool
     {
         return $this->owner->id === auth()->id();
+    }
+
+    public function isTeamParticipant(): bool
+    {
+        return $this->participants()->where('user_id', auth()->id())->exists();
+    }
+
+    public function belongsToTeam(): bool
+    {
+        return $this->isOwnedByLoggedUser() || $this->isTeamParticipant();
     }
 
     public function getParticipants(): Collection
@@ -40,5 +51,10 @@ class Team extends Model
 //            ->using(TeamUserRole::class)
 //            ->as('team_role')
             ->withTimestamps();
+    }
+
+    public function projects(): MorphMany
+    {
+        return $this->morphMany(Project::class, 'owner');
     }
 }

@@ -57,4 +57,15 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function showWorkspace(): View {
+        $page_id = request()->id;
+        $user_id = request()->user()->id;
+        if ((int)$page_id === (int)$user_id) {
+            return view('workspace.index');
+        }
+        else {
+            abort(403);
+        }
+    }
 }

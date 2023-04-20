@@ -15,8 +15,11 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('teams.participating')" :active="request()->routeIs('teams.participating')">
+                        {{ __('Participating teams') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('teams.index')" :active="request()->routeIs('teams.index')">
-                        {{ __('Teams') }}
+                        {{ __('All teams') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -73,8 +76,11 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('teams.participating')" :active="request()->routeIs('teams.participating')">
+                {{ __('Participating teams') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('teams.index')" :active="request()->routeIs('teams.index')">
-                {{ __('Teams') }}
+                {{ __('All teams') }}
             </x-responsive-nav-link>
         </div>
 

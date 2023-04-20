@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -14,7 +15,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $table = 'user';
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +26,7 @@ class User extends Authenticatable
         'name',
         'surname',
         'username',
-        'birth_date',
+        'birthday',
         'email',
         'password',
         'role_id',
@@ -50,6 +51,16 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function belongsToTeam(int $team_id): bool
+    {
+        return $this->participatingInTeams()->where('team_id', $team_id)->exists();
+    }
+
+    public function isTeamOwner(): bool
+    {
+        return $this->teams()->where('user_id', $this->id)->exists();
+    }
+
     public function teams(): HasMany
     {
         return $this->hasMany(Team::class);
@@ -60,5 +71,10 @@ class User extends Authenticatable
 //            ->using(TeamUserRole::class)
 //            ->as('team_role')
             ->withTimestamps();
+    }
+
+    public function projects(): MorphMany
+    {
+        return $this->morphMany(Project::class, 'owner');
     }
 }
