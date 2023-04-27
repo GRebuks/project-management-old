@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KanbanColumn;
 use App\Models\Project;
+use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 use App\Services\NotificationService;
@@ -15,8 +17,7 @@ class ProjectController extends Controller
 {
     public function index(): View
     {
-        $url = request()->path();
-        $resource = explode('/', $url)[0];
+        $resource = $this->getType();
         $id = request()->id;
 
         if ($resource == 'users')
@@ -67,9 +68,7 @@ class ProjectController extends Controller
      */
     public function create(): View
     {
-        $url = request()->path();
-        $resource = explode('/', $url)[0];
-
+        $resource = $this->getType();
         return view('workspace.projects.create', [
             'type' => $resource,
             'id' => request()->id
@@ -107,6 +106,155 @@ class ProjectController extends Controller
         }
     }
 
+    public function show(): View
+    {
+        $id = request()->id;
+        $project_id = request()->project_id;
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+        return view('workspace.projects.show', [
+            'type' => $resource,
+            'project' => $project,
+            'id' => $id
+        ]);
+    }
+
+    public function edit(): View
+    {
+        $id = request()->id;
+        $project_id = request()->project_id;
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+        return view('workspace.projects.edit', [
+            'type' => $resource,
+            'project' => $project,
+            'id' => $id
+        ]);
+    }
+
+    public function tasks(): View
+    {
+        $id = request()->id;
+        $project_id = request()->project_id;
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+        $columns = $project->kanbanColumns;
+        return view('workspace.projects.tasks', [
+            'type' => $resource,
+            'project' => $project,
+            'id' => $id,
+            'columns' => $columns
+        ]);
+    }
+
+    public function storeTask(Request $request): RedirectResponse
+    {
+        //validate info
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'due_date' => 'required',
+            'column_id' => 'required'
+        ]);
+
+        //store task
+        $task = new Task([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'project_id' => request()->project_id,
+            'due_date' => $request->input('due_date'),
+            'kanban_column_id' => $request->input('column_id')
+        ]);
+
+        $task->save();
+
+        $id = request()->id;
+        $project_id = request()->project_id;
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+        return redirect()->route($resource . '.projects.tasks', [
+            'type' => $resource,
+            'project' => $project,
+            'id' => $id,
+            'project_id' => $project_id
+        ]);
+    }
+
+    public function storeKanbanColumn(Request $request): RedirectResponse
+    {
+        $project_id = request()->project_id;
+        $id = request()->id;
+        $type = $this->getType();
+
+        $request->validate([
+            'title' => 'required'
+        ]);
+
+        $kanbanColumn = new KanbanColumn([
+            'title' => $request->input('title'),
+            'project_id' => $project_id,
+        ]);
+
+        $kanbanColumn->save();
+        return redirect()->route($type . '.projects.tasks', [
+            'type' => $type,
+            'id' => $id,
+            'project_id' => $project_id
+        ]);
+    }
+
+    public function files(): View
+    {
+        $id = request()->id;
+        $project_id = request()->project_id;
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+        return view('workspace.projects.files', [
+            'type' => $resource,
+            'project' => $project,
+            'id' => $id
+        ]);
+    }
+
+    public function calendar(): View
+    {
+        $id = request()->id;
+        $project_id = request()->project_id;
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+        return view('workspace.projects.calendar', [
+            'type' => $resource,
+            'project' => $project,
+            'id' => $id
+        ]);
+    }
+
+    public function notes(): View
+    {
+        $id = request()->id;
+        $project_id = request()->project_id;
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+        return view('workspace.projects.notes', [
+            'type' => $resource,
+            'project' => $project,
+            'id' => $id
+        ]);
+    }
+
+    public function settings(): View
+    {
+        $id = request()->id;
+        $project_id = request()->project_id;
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+        return view('workspace.projects.settings', [
+            'type' => $resource,
+            'project' => $project,
+            'id' => $id
+        ]);
+    }
+
     private function storeForTeam(Request $request, $team_id): Project
     {
         $project = new Project([
@@ -129,5 +277,15 @@ class ProjectController extends Controller
         ]);
 
         $project->save();
+    }
+
+    /**
+     * Returns the type of the resource
+     * @return string
+     */
+    private function getType(): string
+    {
+        $url = request()->path();
+        return explode('/', $url)[0];
     }
 }

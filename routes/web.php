@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeamController;
 use App\Http\Middleware\TeamWorkspaceMiddleware;
 use App\Http\Middleware\UserWorkspaceMiddleware;
+use App\Http\Middleware\ProjectWorkspaceMiddleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -55,6 +56,21 @@ Route::middleware([TeamWorkspaceMiddleware::class])->group(function(){
     Route::get('/teams/{id}/workspace/projects', [ProjectController::class, 'index'])->name('teams.projects');
     Route::get('/teams/{id}/workspace/projects/create', [ProjectController::class, 'create'])->name('teams.projects.create');
     Route::post('/teams/{id}/workspace/projects/store', [ProjectController::class, 'store'])->name('teams.projects.store');
+
+    Route::get('/teams/{id}/workspace/projects/{project_id}', [ProjectController::class, 'show'])->name('teams.projects.show');
+
+    Route::get('/teams/{id}/workspace/projects/{project_id}/tasks', [ProjectController::class, 'tasks'])->name('teams.projects.tasks');
+    Route::post('/teams/{id}/workspace/projects/{project_id}/tasks/store', [ProjectController::class, 'storeTask'])->name('teams.projects.tasks.store');
+
+    Route::get('/teams/{id}/workspace/projects/{project_id}/files', [ProjectController::class, 'files'])->name('teams.projects.files');
+    Route::get('/teams/{id}/workspace/projects/{project_id}/calendar', [ProjectController::class, 'calendar'])->name('teams.projects.calendar');
+    Route::get('/teams/{id}/workspace/projects/{project_id}/notes', [ProjectController::class, 'notes'])->name('teams.projects.notes');
+    Route::get('/teams/{id}/workspace/projects/{project_id}/settings', [ProjectController::class, 'settings'])->name('teams.projects.settings');
+
+    Route::patch('/teams/{id}/workspace/projects/{project_id}/update', [ProjectController::class, 'update'])->name('teams.projects.update');
+    Route::delete('/teams/{id}/workspace/projects/{project_id}/destroy', [ProjectController::class, 'destroy'])->name('teams.projects.destroy');
+
+    Route::post('/teams/{id}/workspace/projects/{project_id}/columns/store', [ProjectController::class, 'storeKanbanColumn'])->name('teams.projects.columns.store');
 });
 
 Route::middleware([UserWorkspaceMiddleware::class])->group(function(){
@@ -62,6 +78,9 @@ Route::middleware([UserWorkspaceMiddleware::class])->group(function(){
     Route::get('/users/{id}/workspace/projects', [ProjectController::class, 'index'])->name('users.projects');
     Route::get('/users/{id}/workspace/projects/create', [ProjectController::class, 'create'])->name('users.projects.create');
     Route::post('/users/{id}/workspace/projects/store', [ProjectController::class, 'store'])->name('users.projects.store');
+
+    Route::get('/users/{id}/workspace/projects/{project_id}', [ProjectController::class, 'show'])->name('users.projects.show');
+
 });
 
 require __DIR__.'/auth.php';

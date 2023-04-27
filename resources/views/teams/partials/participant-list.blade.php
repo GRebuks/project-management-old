@@ -15,7 +15,7 @@
         @else
 
         @foreach($participants as $participant)
-            <p>{{ $participant->username }}</p>
+            <p style="padding-top: 0.2rem; font-weight: bold">{{ $participant->username }}</p>
         @endforeach
         @endif
     </header>

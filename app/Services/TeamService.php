@@ -41,7 +41,7 @@ class TeamService {
     public function addParticipant(User $user, Team $team): void
     {
         if (!$user->participatingInTeams->contains($team)) {
-            $user->participatingInTeams()->attach($team, ['role_id' => 1]);
+            $user->participatingInTeams()->attach($team);
         }
     }
 

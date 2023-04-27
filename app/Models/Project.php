@@ -20,4 +20,14 @@ class Project extends Model
     {
         return $this->morphTo();
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function kanbanColumns()
+    {
+        return $this->hasMany(KanbanColumn::class);
+    }
 }

@@ -56,9 +56,9 @@ class User extends Authenticatable
         return $this->participatingInTeams()->where('team_id', $team_id)->exists();
     }
 
-    public function isTeamOwner(): bool
+    public function isTeamOwner($team_id): bool
     {
-        return $this->teams()->where('user_id', $this->id)->exists();
+        return Team::find($team_id)->user_id === $this->id;
     }
 
     public function teams(): HasMany
