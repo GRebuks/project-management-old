@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->string('description');
             $table->dateTime('due_date')->nullable();
-            $table->foreignId('project_id')->constrained();
-            $table->foreignId('kanban_column_id')->constrained();
+            $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->foreignId('kanban_column_id')->constrained()->onDelete('cascade');
             $table->boolean('completed')->default(false);
             $table->boolean('pinned')->default(false);
             $table->timestamps();

@@ -76,6 +76,48 @@ class ProjectController extends Controller
     }
 
     /**
+     * Updates a project
+     * @return View
+     */
+    public function update(): RedirectResponse {
+        $id = request()->id;
+        $project_id = request()->project_id;
+
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+
+        $project->name = request()->name;
+        $project->description = request()->description;
+        $project->save();
+
+        return redirect()->route($resource . '.projects.settings', [
+            'type' => $resource,
+            'project' => $project,
+            'project_id' => $project_id,
+            'id' => $id
+        ])->with('status', 'project-updated');;
+    }
+
+    /**
+     * Deletes a project
+     * @return View
+     */
+    public function destroy(): RedirectResponse {
+        $id = request()->id;
+        $project_id = request()->project_id;
+
+        $resource = $this->getType();
+        $project = Project::find($project_id);
+
+        $project->delete();
+
+        return redirect()->route($resource . '.projects', [
+            'type' => $resource,
+            'id' => $id
+        ]);
+    }
+
+    /**
      * Stores a new project
      * @param Request $request
      * @return RedirectResponse
